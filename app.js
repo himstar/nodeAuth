@@ -1,14 +1,41 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var mongoose = require('body-parser');
+var mongoose = require('mongoose');
+var cors = require('cors');
 
 var app = express();
-var port = 3000;
+var port = 3200;
 
-app.get('/', function(req, res){
-    res.send('Welcome to app!');
+const route = require('./routes/route');
+
+// connect to mongodb
+mongoose.connect('mongodb://localhost:27017/clist');
+
+mongoose.connection.on('connected', ()=>{
+    console.log('Connected to mongodb');
 });
 
-app.listen(port, function(){
-    console.log('Server running on port: '+port);
+mongoose.connection.on('error', (err)=>{
+    if(err){
+        console.log('Error in mongo '+err);
+    }
 })
+
+// middleware
+app.use(cors());
+
+app.set('json spaces', 4);
+
+// parse json
+app.use(bodyParser.json());
+
+app.use('/api', route);
+
+// home route
+app.get('/', function(req, res){
+    res.send('Success');
+})
+
+app.listen(port, ()=>{
+    console.log('Server Started at port: '+port);
+});
