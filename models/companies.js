@@ -5,14 +5,18 @@ const CompanySchema = mongoose.Schema({
         type: String,
         required: true
     },
-    rate: {
+    rate: [{
         type: Number,
         required: true
-    },
-    review: {
+    }],
+    review: [{
         type: String,
         required: true
-    }
+    }],
+    userEmail: [{
+        type: String,
+        required: true
+    }]    
 });
 
 const Company = module.exports = mongoose.model('Company', CompanySchema);

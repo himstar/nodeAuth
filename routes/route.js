@@ -17,6 +17,7 @@ router.post('/adduser', function (req, res, next) {
     var email= req.body.email;
     var phone= req.body.phone;
     var password= req.body.password;
+    var assignedCompanies= req.body.assignedCompanies;
 
     User.findOne({ email: email }, function (err, user) {
         if (err) console.log(err);
@@ -28,7 +29,8 @@ router.post('/adduser', function (req, res, next) {
                 name: req.body.name,
                 email: req.body.email,
                 phone: req.body.phone,
-                password: req.body.password
+                password: req.body.password,
+                assignedCompanies: req.body.assignedCompanies
             });
             newUser.save((err, user)=>{
                 if(err){
@@ -66,6 +68,25 @@ router.post('/login', function (req, res) {
     });
 });
 
+// user assigned company
+router.post('/userassigncompany', function (req, res, next) {
+
+    var email = req.body.email;    
+    var assignedCompanies= req.body.assignedCompanies;
+
+    User.findOne({ email: email }, function (err, user) {
+        if (err) console.log(err);
+        user.assignedCompanies.push(assignedCompanies);
+        user.save((err, user)=>{
+            if(err){
+                res.json(err);
+            } else {
+                res.json('User company assigned');
+            }
+        });
+    });
+});
+
 //company
 
 router.get('/companies', (req, res, next)=> {
@@ -79,7 +100,8 @@ router.post('/addcompany', function (req, res, next) {
     var companyUrl= req.body.companyUrl;
     var rate= req.body.rate;
     var review= req.body.review;
-
+    var userEmail= req.body.userEmail;
+    
     Company.findOne({ companyUrl: companyUrl }, function (err, company) {
         if (err) console.log(err);
 
@@ -89,7 +111,8 @@ router.post('/addcompany', function (req, res, next) {
             var newCompany = new Company({
                 companyUrl: req.body.companyUrl,
                 rate: req.body.rate,
-                review: req.body.review
+                review: req.body.review,
+                userEmail: req.body.userEmail
             });
             newCompany.save((err, company)=>{
                 if(err){
@@ -101,5 +124,37 @@ router.post('/addcompany', function (req, res, next) {
         }
     });
 });
+router.delete('/company/:id', (req, res, next)=>{
+    Company.remove({_id: req.params.id}, (err, result)=>{
+        if(err){
+            res.json(err);
+        } else {
+            res.json('Company deleted successfully');
+        }
+    });
+});
+// review for existing company
+router.post('/addcompanyreview', function (req, res, next) {
+
+    var companyUrl= req.body.companyUrl;
+    var rate= req.body.rate;
+    var review= req.body.review;
+    var userEmail= req.body.userEmail;
+
+    Company.findOne({ companyUrl: companyUrl }, function (err, company) {
+        if (err) console.log(err);
+        company.rate.push(rate);
+        company.review.push(review);
+        company.userEmail.push(userEmail);
+        company.save((err, company)=>{
+            if(err){
+                res.json(err);
+            } else {
+                res.json('Review added successfully');
+            }
+        });
+    });
+});
+
 
 module.exports = router;
