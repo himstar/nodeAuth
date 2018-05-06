@@ -48,4 +48,20 @@ router.delete('/user/:id', (req, res, next)=>{
     });
 });
 
+router.post('/login', function (req, res) {
+
+    var email = req.body.email;
+    var password = req.body.password;
+
+    User.findOne({ email: email, password: password }, function (err, user) {
+        if (err) console.log(err);
+
+        if (user) {
+            res.json(email);
+        } else {
+            res.json("Login succesfull");
+        }
+    });
+});
+
 module.exports = router;
