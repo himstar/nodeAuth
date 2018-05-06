@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const User = require('../models/users');
+const Company = require('../models/companies');
 
+//User
 router.get('/users', (req, res, next)=> {
     User.find((err, users)=>{
         res.json(users);
@@ -57,9 +59,45 @@ router.post('/login', function (req, res) {
         if (err) console.log(err);
 
         if (user) {
-            res.json(email);
+            res.json('Login succesfull');
         } else {
-            res.json("Login succesfull");
+            res.json("invalidLogin");
+        }
+    });
+});
+
+//company
+
+router.get('/companies', (req, res, next)=> {
+    Company.find((err, companies)=>{
+        res.json(companies);
+    });
+});
+
+router.post('/addcompany', function (req, res, next) {
+
+    var companyUrl= req.body.companyUrl;
+    var rate= req.body.rate;
+    var review= req.body.review;
+
+    Company.findOne({ companyUrl: companyUrl }, function (err, company) {
+        if (err) console.log(err);
+
+        if (company) {
+            res.json("companyExists");
+        } else {
+            var newCompany = new Company({
+                companyUrl: req.body.companyUrl,
+                rate: req.body.rate,
+                review: req.body.review
+            });
+            newCompany.save((err, company)=>{
+                if(err){
+                    res.json(err);
+                } else {
+                    res.json('Company added successfully');
+                }
+            });
         }
     });
 });
