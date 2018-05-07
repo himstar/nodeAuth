@@ -13,7 +13,7 @@ const CompanySchema = mongoose.Schema({
         type: String,
         required: true
     }],
-    userEmail: [{
+    assignedUser: [{
         type: String,
         required: true
     }]    

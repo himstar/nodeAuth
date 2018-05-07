@@ -71,10 +71,10 @@ router.post('/login', function (req, res) {
 // user assigned company
 router.post('/userassigncompany', function (req, res, next) {
 
-    var email = req.body.email;    
+    var UserId = req.body._id;    
     var assignedCompanies= req.body.assignedCompanies;
 
-    User.findOne({ email: email }, function (err, user) {
+    User.findOne({ _id: UserId }, function (err, user) {
         if (err) console.log(err);
         user.assignedCompanies.push(assignedCompanies);
         user.save((err, user)=>{
@@ -100,7 +100,7 @@ router.post('/addcompany', function (req, res, next) {
     var companyUrl= req.body.companyUrl;
     var rate= req.body.rate;
     var review= req.body.review;
-    var userEmail= req.body.userEmail;
+    var UserId= req.body._id;
     
     Company.findOne({ companyUrl: companyUrl }, function (err, company) {
         if (err) console.log(err);
@@ -112,7 +112,7 @@ router.post('/addcompany', function (req, res, next) {
                 companyUrl: req.body.companyUrl,
                 rate: req.body.rate,
                 review: req.body.review,
-                userEmail: req.body.userEmail
+                assignedUser: req.body._id
             });
             newCompany.save((err, company)=>{
                 if(err){
@@ -139,13 +139,13 @@ router.post('/addcompanyreview', function (req, res, next) {
     var companyUrl= req.body.companyUrl;
     var rate= req.body.rate;
     var review= req.body.review;
-    var userEmail= req.body.userEmail;
+    var assignedUser= req.body._id;
 
     Company.findOne({ companyUrl: companyUrl }, function (err, company) {
         if (err) console.log(err);
         company.rate.push(rate);
         company.review.push(review);
-        company.userEmail.push(userEmail);
+        company.assignedUser.push(assignedUser);
         company.save((err, company)=>{
             if(err){
                 res.json(err);
