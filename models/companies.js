@@ -5,17 +5,12 @@ const CompanySchema = mongoose.Schema({
         type: String,
         required: true
     },
-    rate: [{
-        type: Number,
-        required: true
-    }],
-    review: [{
+    companyName: [{
         type: String,
         required: true
     }],
-    assignedUser: [{
-        type: String,
-        required: true
+    assignedReviews: [{
+        type: String
     }]    
 });
 

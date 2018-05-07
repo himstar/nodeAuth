@@ -17,9 +17,9 @@ const UserSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    assignedCompanies: [{
+    assignedReviews: [{
         type: String
-    }],    
+    }]
 });
 
 const User = module.exports = mongoose.model('User', UserSchema);

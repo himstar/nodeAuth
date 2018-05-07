@@ -3,6 +3,7 @@ const router = express.Router();
 
 const User = require('../models/users');
 const Company = require('../models/companies');
+const Review = require('../models/reviews');
 
 //User
 router.get('/users', (req, res, next)=> {
@@ -11,15 +12,15 @@ router.get('/users', (req, res, next)=> {
     });
 });
 
-router.post('/adduser', function (req, res, next) {
+router.post('/adduser', (req, res, next)=>{
 
     var name= req.body.name;
     var email= req.body.email;
     var phone= req.body.phone;
     var password= req.body.password;
-    var assignedCompanies= req.body.assignedCompanies;
+    var assignedReviews= req.body.reviewId;
 
-    User.findOne({ email: email }, function (err, user) {
+    User.findOne({ email: email }, (err, user)=>{
         if (err) console.log(err);
 
         if (user) {
@@ -30,7 +31,7 @@ router.post('/adduser', function (req, res, next) {
                 email: req.body.email,
                 phone: req.body.phone,
                 password: req.body.password,
-                assignedCompanies: req.body.assignedCompanies
+                assignedReviews: req.body.reviewId
             });
             newUser.save((err, user)=>{
                 if(err){
@@ -52,12 +53,12 @@ router.delete('/user/:id', (req, res, next)=>{
     });
 });
 
-router.post('/login', function (req, res) {
+router.post('/login', (req, res)=>{
 
     var email = req.body.email;
     var password = req.body.password;
 
-    User.findOne({ email: email, password: password }, function (err, user) {
+    User.findOne({ email: email, password: password }, (err, user)=> {
         if (err) console.log(err);
 
         if (user) {
@@ -65,25 +66,6 @@ router.post('/login', function (req, res) {
         } else {
             res.json("invalidLogin");
         }
-    });
-});
-
-// user assigned company
-router.post('/userassigncompany', function (req, res, next) {
-
-    var UserId = req.body._id;    
-    var assignedCompanies= req.body.assignedCompanies;
-
-    User.findOne({ _id: UserId }, function (err, user) {
-        if (err) console.log(err);
-        user.assignedCompanies.push(assignedCompanies);
-        user.save((err, user)=>{
-            if(err){
-                res.json(err);
-            } else {
-                res.json('User company assigned');
-            }
-        });
     });
 });
 
@@ -95,14 +77,13 @@ router.get('/companies', (req, res, next)=> {
     });
 });
 
-router.post('/addcompany', function (req, res, next) {
+router.post('/addcompany', (req, res, next)=> {
 
     var companyUrl= req.body.companyUrl;
-    var rate= req.body.rate;
-    var review= req.body.review;
-    var UserId= req.body._id;
+    var companyName= req.body.companyName;
+    var assignedReviews= req.body.reviewId;
     
-    Company.findOne({ companyUrl: companyUrl }, function (err, company) {
+    Company.findOne({ companyUrl: companyUrl }, (err, company) => {
         if (err) console.log(err);
 
         if (company) {
@@ -110,9 +91,8 @@ router.post('/addcompany', function (req, res, next) {
         } else {
             var newCompany = new Company({
                 companyUrl: req.body.companyUrl,
-                rate: req.body.rate,
-                review: req.body.review,
-                assignedUser: req.body._id
+                companyName: req.body.companyName,
+                assignedReviews: req.body.reviewId
             });
             newCompany.save((err, company)=>{
                 if(err){
@@ -133,28 +113,57 @@ router.delete('/company/:id', (req, res, next)=>{
         }
     });
 });
-// review for existing company
-router.post('/addcompanyreview', function (req, res, next) {
+// reviews
+router.get('/reviews', (req, res, next)=> {
+    Review.find((err, reviews)=>{
+        res.json(reviews);
+    });
+});
 
-    var companyUrl= req.body.companyUrl;
+
+router.post('/addreview', (req, res, next)=> {
     var rate= req.body.rate;
     var review= req.body.review;
-    var assignedUser= req.body._id;
+    var assignedUser= req.body.UserId;
+    var assignedCompany= req.body.CompanyId;
 
-    Company.findOne({ companyUrl: companyUrl }, function (err, company) {
+    var newReview = new Review({
+        rate: req.body.rate,
+        review: req.body.review,
+        assignedUser: req.body.UserId,
+        assignedCompany: req.body.CompanyId
+    });
+    newReview.save((err, review)=>{
+        if(err){
+            res.json(err);
+        } else {
+            res.json('Review added successfully');
+        }
+    });    
+});
+
+// middlewares
+// assign review to a user
+router.post('/assignreviewuser', (req, res, next)=>{
+
+    var UserId = req.body.UserId;    
+    var reviewId= req.body.reviewId;
+
+    User.findOne({_id: UserId}, (err, user)=>{
         if (err) console.log(err);
-        company.rate.push(rate);
-        company.review.push(review);
-        company.assignedUser.push(assignedUser);
-        company.save((err, company)=>{
+        user.assignedReviews.push(reviewId);
+        user.save((err, user)=>{
             if(err){
                 res.json(err);
             } else {
-                res.json('Review added successfully');
+                res.json('Review assigned to '+UserId);
             }
         });
     });
 });
+
+
+
 
 
 module.exports = router;
