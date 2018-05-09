@@ -9,13 +9,21 @@ const UserSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    phone: {
-        type: Number,
-        required: true
-    },
     password: {
         type: String,
         required: true
+    },
+    phone: {
+        type: Number
+    },
+    gender: {
+        type: String
+    },
+    country: {
+        type: String
+    },
+    profile_image: {
+        type: String
     },
     assignedReviews: [{
         type: String

@@ -17,6 +17,15 @@ router.get('/:id', (req, res, next)=>{
         }
     });
 });
+router.get('/email/:email', (req, res, next)=>{
+    User.find({email: req.params.email}, (err, result)=>{
+        if(err){
+            res.json(err);
+        } else {
+            res.json(result);
+        }
+    });
+});
 router.post('/login', (req, res)=>{
     var email = req.body.email;
     var password = req.body.password;
@@ -33,7 +42,6 @@ router.post('/login', (req, res)=>{
 router.post('/add', (req, res, next)=>{
     var name= req.body.name;
     var email= req.body.email;
-    var phone= req.body.phone;
     var password= req.body.password;
     var assignedReviews= req.body.reviewId;
     User.findOne({ email: email }, (err, user)=>{
@@ -45,7 +53,6 @@ router.post('/add', (req, res, next)=>{
             var newUser = new User({
                 name: req.body.name,
                 email: req.body.email,
-                phone: req.body.phone,
                 password: req.body.password,
                 assignedReviews: req.body.reviewId
             });
@@ -68,5 +75,52 @@ router.delete('/:id', (req, res, next)=>{
         }
     });
 });
-
+router.post('/resetpassword', (req, res, next)=>{
+    var email = req.body.email;    
+    var password= req.body.password;
+    User.findOne({email: email}, (err, user)=>{
+        if (err) {
+            console.log(err);
+        } else if(!user){
+            res.json('User not exist');
+        } else {
+            user.password = req.body.password;
+            user.save((err, user)=>{
+                if(err){
+                    res.json(err);
+                } else {
+                    res.json('Password updated for '+email);
+                }
+            });
+        }
+    });
+});
+router.post('/profile/update', (req, res, next)=>{
+    var email = req.body.email;    
+    var phone= req.body.phone;
+    var gender= req.body.gender;
+    var country= req.body.country;
+    var profile_image= req.body.profile_image;
+    var name= req.body.name;
+    User.findOne({email: email}, (err, user)=>{
+        if (err) {
+            console.log(err)
+        } else if(!user){
+            res.json('User not exist');
+        } else {
+            user.phone = phone;
+            user.gender = gender;
+            user.country = country;
+            user.name = name;
+            user.profile_image = profile_image;
+            user.save((err, user)=>{
+                if(err){
+                    res.json(err);
+                } else {
+                    res.json('Profile updated for '+email);
+                }
+            });
+        }
+    });
+});
 module.exports = router;
