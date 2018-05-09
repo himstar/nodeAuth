@@ -7,6 +7,9 @@ var app = express();
 var port = 3200;
 
 const route = require('./routes/route');
+const user = require('./routes/user');
+const company = require('./routes/company');
+const review = require('./routes/review');
 
 // connect to mongodb
 mongoose.connect('mongodb://localhost:27017/clist');
@@ -29,10 +32,13 @@ app.set('json spaces', 4);
 // parse json
 app.use(bodyParser.json());
 
-app.use('/api', route);
+app.use('/api/common', route);
+app.use('/api/user', user);
+app.use('/api/company', company);
+app.use('/api/review', review);
 
 // home route
-app.get('/', function(req, res){
+app.get('/api', function(req, res){
     res.send('Success');
 })
 
