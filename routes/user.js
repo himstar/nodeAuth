@@ -26,14 +26,14 @@ router.get('/email/:email', (req, res, next)=>{
         }
     });
 });
-router.post('/login', (req, res)=>{
+router.post('/login', (req, res, next)=>{
     var email = req.body.email;
     var password = req.body.password;
     User.findOne({ email: email, password: password }, (err, user)=> {
         if (err) console.log(err);
-
         if (user) {
-            res.json('Login succesfull');
+            req.session.user = user;
+            res.json({session: req.session.user});
         } else {
             res.json("invalidLogin");
         }
@@ -96,31 +96,35 @@ router.post('/resetpassword', (req, res, next)=>{
     });
 });
 router.post('/profile/update', (req, res, next)=>{
-    var email = req.body.email;    
-    var phone= req.body.phone;
-    var gender= req.body.gender;
-    var country= req.body.country;
-    var profile_image= req.body.profile_image;
-    var name= req.body.name;
-    User.findOne({email: email}, (err, user)=>{
-        if (err) {
-            console.log(err)
-        } else if(!user){
-            res.json('User not exist');
-        } else {
-            user.phone = phone;
-            user.gender = gender;
-            user.country = country;
-            user.name = name;
-            user.profile_image = profile_image;
-            user.save((err, user)=>{
-                if(err){
-                    res.json(err);
-                } else {
-                    res.json('Profile updated for '+email);
-                }
-            });
-        }
-    });
+    if(req.session.user){
+        var phone= req.body.phone;
+        var gender= req.body.gender;
+        var country= req.body.country;
+        var profile_image= req.body.profile_image;
+        var name= req.body.name;
+        User.findOne({_id: req.session.user._id}, (err, user)=>{
+            if (err) {
+                console.log(err);
+            } else if(!user){
+                res.json('User not exist');
+            } else {
+                user.phone = phone;
+                user.gender = gender;
+                user.country = country;
+                user.name = name;
+                user.profile_image = profile_image;
+                user.save((err, user)=>{
+                    if(err){
+                        res.json(err);
+                    } else {
+                        res.json('Profile updated for '+user.email);
+                    }
+                });
+            }
+        });
+    } else {
+        res.json({error: "unauthorised"});
+    }
 });
+
 module.exports = router;
