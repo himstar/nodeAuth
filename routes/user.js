@@ -60,7 +60,7 @@ router.post('/add', (req, res, next)=>{
                 if(err){
                     res.json(err);
                 } else {
-                    res.json('Contact added successfully');
+                    res.json('User added successfully');
                 }
             });
         }
@@ -126,5 +126,32 @@ router.post('/profile/update', (req, res, next)=>{
         res.json({error: "unauthorised"});
     }
 });
-
+router.post('/profile/adminUpdate', (req, res, next)=>{
+    var userId = req.body.userId;
+    var phone= req.body.phone;
+    var gender= req.body.gender;
+    var country= req.body.country;
+    var profile_image= req.body.profile_image;
+    var name= req.body.name;
+    User.findOne({_id: userId}, (err, user)=>{
+        if (err) {
+            console.log(err);
+        } else if(!user){
+            res.json('User not exist');
+        } else {
+            user.phone = phone;
+            user.gender = gender;
+            user.country = country;
+            user.name = name;
+            user.profile_image = profile_image;
+            user.save((err, user)=>{
+                if(err){
+                    res.json(err);
+                } else {
+                    res.json('Profile updated for '+user.email);
+                }
+            });
+        }
+    });
+});
 module.exports = router;

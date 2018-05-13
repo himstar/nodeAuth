@@ -12,6 +12,7 @@ const route = require('./routes/route');
 const user = require('./routes/user');
 const company = require('./routes/company');
 const review = require('./routes/review');
+const admin = require('./routes/admin');
 
 // connect to mongodb
 mongoose.connect('mongodb://localhost:27017/clist');
@@ -49,6 +50,7 @@ app.use('/api/common', route);
 app.use('/api/user', user);
 app.use('/api/company', company);
 app.use('/api/review', review);
+app.use('/api/admin', admin);
 
 // home route
 app.get('/api', function(req, res){
