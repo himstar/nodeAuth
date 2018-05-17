@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/users');
 
@@ -26,45 +28,77 @@ router.get('/email/:email', (req, res, next)=>{
         }
     });
 });
-router.post('/login', (req, res, next)=>{
+router.post('/login', function(req, res){
     var email = req.body.email;
     var password = req.body.password;
-    User.findOne({ email: email, password: password }, (err, user)=> {
-        if (err) console.log(err);
-        if (user) {
-            req.session.user = user;
-            res.json({"message":"success"});
-        } else {
-            res.json({"message":"invalid"});
-        }
-    });
+    User.findOne({email: email})
+    .exec()
+    .then(function(user) {
+       bcrypt.compare(password, user.password, function(err, result){
+          if(err) {
+             return res.json({
+                message: 'Unauthorized Access'
+             });
+          }
+          if(result) {
+             const jwtToken = jwt.sign({
+                email: user.email,
+                _id: user._id
+              },
+              'secret',
+               {
+                 expiresIn: '2h'
+               });
+               return res.json({
+                    message: 'success',
+                    token: jwtToken
+               });             
+          }
+          return res.json({
+                message: 'Unauthorized Access'
+          });
+       });
+    })
+    .catch(error => {
+       res.status(500).json({
+          error: error
+       });
+    });;
 });
-router.post('/add', (req, res, next)=>{
+router.post('/register', function(req, res) {
     var name= req.body.name;
     var email= req.body.email;
-    var password= req.body.password;
-    var assignedReviews= req.body.reviewId;
-    User.findOne({ email: email }, (err, user)=>{
-        if (err) console.log(err);
-        if (user) {
-            res.json({"message":"alreadyRegistered"});
-        } else {
+    var password= req.body.password;    
+    bcrypt.hash(password, 10, function(err, hash){
+       if(err) {
+          return res.status(500).json({
+             error: err
+          });
+       }
+       else {
             var newUser = new User({
-                name: req.body.name,
-                email: req.body.email,
-                password: req.body.password,
-                assignedReviews: req.body.reviewId
+                name: name,
+                email: email,
+                password: hash
             });
-            newUser.save((err, user)=>{
-                if(err){
-                    res.json(err);
-                } else {
-                    res.json({"message":"success"});
-                }
+            newUser.save((err, result)=>{
+                if(err) {
+                    return res.json({
+                        message: 'duplicate value'
+                    });
+                 }
+                 if(result) {
+                    return res.json({
+                       message: 'success'
+                    });
+                 }
+                 return res.json({
+                        message: 'Unauthorized Access1'
+                 });
             });
-        }
+       }
     });
-});
+ });
 router.delete('/:id', (req, res, next)=>{
     User.remove({_id: req.params.id}, (err, result)=>{
         if(err){
