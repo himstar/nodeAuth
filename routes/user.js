@@ -33,9 +33,9 @@ router.post('/login', (req, res, next)=>{
         if (err) console.log(err);
         if (user) {
             req.session.user = user;
-            res.json({session: req.session.user});
+            res.json({"message":"success"});
         } else {
-            res.json("invalidLogin");
+            res.json({"message":"invalid"});
         }
     });
 });
@@ -46,9 +46,8 @@ router.post('/add', (req, res, next)=>{
     var assignedReviews= req.body.reviewId;
     User.findOne({ email: email }, (err, user)=>{
         if (err) console.log(err);
-
         if (user) {
-            res.json("userExists");
+            res.json({"message":"alreadyRegistered"});
         } else {
             var newUser = new User({
                 name: req.body.name,
@@ -60,7 +59,7 @@ router.post('/add', (req, res, next)=>{
                 if(err){
                     res.json(err);
                 } else {
-                    res.json('User added successfully');
+                    res.json({"message":"success"});
                 }
             });
         }
