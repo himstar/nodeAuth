@@ -43,6 +43,7 @@ router.post('/login', function(req, res){
           if(result) {
              const jwtToken = jwt.sign({
                 email: user.email,
+                admin: user.admin,
                 _id: user._id
               },
               'secret',
@@ -60,18 +61,19 @@ router.post('/login', function(req, res){
        });
     })
     .catch(error => {
-       res.status(500).json({
-          error: error
+       res.json({
+        message: 'error'
        });
     });;
 });
 router.post('/register', function(req, res) {
     var name= req.body.name;
     var email= req.body.email;
+    var admin= req.body.admin;
     var password= req.body.password;    
     bcrypt.hash(password, 10, function(err, hash){
        if(err) {
-          return res.status(500).json({
+          return res.json({
              error: err
           });
        }
@@ -79,6 +81,7 @@ router.post('/register', function(req, res) {
             var newUser = new User({
                 name: name,
                 email: email,
+                admin: admin,
                 password: hash
             });
             newUser.save((err, result)=>{
@@ -93,7 +96,7 @@ router.post('/register', function(req, res) {
                     });
                  }
                  return res.json({
-                        message: 'Unauthorized Access1'
+                        message: 'error'
                  });
             });
        }
