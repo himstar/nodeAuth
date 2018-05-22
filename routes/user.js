@@ -43,7 +43,7 @@ router.post('/login', function(req, res){
           if(result) {
              const jwtToken = jwt.sign({
                 email: user.email,
-                admin: user.admin,
+                userLevel: user.userLevel,
                 _id: user._id
               },
               'secret',
