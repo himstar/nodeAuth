@@ -1,22 +1,32 @@
 const mongoose = require('mongoose');
 
 const CompanySchema = mongoose.Schema({
-    companyUrl: {
+    webUrl: {
         type: String,
         required: true
     },
-    companyName: [{
+    companyName: {
         type: String,
         required: true
-    }],
-    companyEmail: {
+    },
+    personName: {
+        type: String,
+        required: true
+    },    
+    email: {
+        type: String,
+        unique: true,
+        required: true        
+    },
+    phone: {
         type: String
     },
-    companyPhone: {
+    password: {
+        type: String,
+        required: true
+    },
+    activePlan: {
         type: Number
-    },
-    companyPassword: {
-        type: String
     },
     assignedReviews: [{
         type: String

@@ -87,7 +87,7 @@ router.post('/register', function(req, res) {
             newUser.save((err, result)=>{
                 if(err) {
                     return res.json({
-                        message: 'duplicate value'
+                        message: 'alreadyRegistered'
                     });
                  }
                  if(result) {
@@ -101,7 +101,7 @@ router.post('/register', function(req, res) {
             });
        }
     });
- });
+});
 router.delete('/:id', (req, res, next)=>{
     User.remove({_id: req.params.id}, (err, result)=>{
         if(err){

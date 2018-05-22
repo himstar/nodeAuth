@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const Company = require('../models/companies');
 
@@ -17,28 +19,84 @@ router.get('/:id', (req, res, next)=>{
         }
     });
 });
-router.post('/add', (req, res, next)=> {
-    var companyUrl= req.body.companyUrl;
+router.post('/login', function(req, res){
+    var email = req.body.email;
+    var password = req.body.password;
+    Company.findOne({email: email})
+    .exec()
+    .then(function(company) {
+       bcrypt.compare(password, company.password, function(err, result){
+          if(err) {
+             return res.json({
+                message: 'Unauthorized Access'
+             });
+          }
+          if(result) {
+             const jwtToken = jwt.sign({
+                email: company.email,
+                activePlan: company.activePlan,
+                _id: company._id
+              },
+              'secret',
+               {
+                 expiresIn: '2h'
+               });
+               return res.json({
+                    message: 'success',
+                    token: jwtToken
+               });             
+          }
+          return res.json({
+                message: 'Unauthorized Access'
+          });
+       });
+    })
+    .catch(error => {
+       res.json({
+        message: 'error'
+       });
+    });;
+});
+router.post('/register', function(req, res) {
+    var personName= req.body.personName;
     var companyName= req.body.companyName;
-    var assignedReviews= req.body.reviewId;
-    Company.findOne({ companyUrl: companyUrl }, (err, company) => {
-        if (err) console.log(err);
-        if (company) {
-            res.json("companyExists");
-        } else {
+    var webUrl = req.body.webUrl;
+    var email = req.body.email;
+    var phone = req.body.phone;
+    var password = req.body.password;  
+    var activePlan = 0;  
+    bcrypt.hash(password, 10, function(err, hash){
+       if(err) {
+          return res.json({
+             error: err
+          });
+       }
+       else {
             var newCompany = new Company({
-                companyUrl: req.body.companyUrl,
-                companyName: req.body.companyName,
-                assignedReviews: req.body.reviewId
+                personName: personName,
+                companyName: companyName,
+                webUrl: webUrl,
+                email: email,
+                phone: phone,
+                activePlan: activePlan,
+                password: hash
             });
-            newCompany.save((err, company)=>{
-                if(err){
-                    res.json(err);
-                } else {
-                    res.json('Company added successfully');
-                }
+            newCompany.save((err, result)=>{
+                if(err) {
+                    return res.json({
+                        message: 'alreadyRegistered'
+                    });
+                 }
+                 if(result) {
+                    return res.json({
+                       message: 'success'
+                    });
+                 }
+                 return res.json({
+                        message: 'error'
+                 });
             });
-        }
+       }
     });
 });
 router.post('/addAdmin', (req, res, next)=> {
