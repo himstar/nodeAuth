@@ -26,8 +26,8 @@ const UserSchema = mongoose.Schema({
     profile_image: {
         type: String
     },
-    admin: {
-        type: Boolean
+    userLevel: {
+        type: Number
     },
     assignedReviews: [{
         type: String

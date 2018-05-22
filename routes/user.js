@@ -67,10 +67,10 @@ router.post('/login', function(req, res){
     });;
 });
 router.post('/register', function(req, res) {
-    var name= req.body.name;
-    var email= req.body.email;
-    var admin= req.body.admin;
-    var password= req.body.password;    
+    var name = req.body.name;
+    var email = req.body.email;
+    var userLevel = 0;
+    var password = req.body.password;    
     bcrypt.hash(password, 10, function(err, hash){
        if(err) {
           return res.json({
@@ -81,7 +81,7 @@ router.post('/register', function(req, res) {
             var newUser = new User({
                 name: name,
                 email: email,
-                admin: admin,
+                userLevel: userLevel,
                 password: hash
             });
             newUser.save((err, result)=>{
