@@ -18,9 +18,27 @@ const CompanySchema = mongoose.Schema({
         unique: true,
         required: true        
     },
+    country: {
+        type: String
+    },
     phone: {
         type: String
     },
+    facebook: {
+        type: String
+    }, 
+    googlePlus: {
+        type: String
+    }, 
+    twitter: {
+        type: String
+    }, 
+    linkedin: {
+        type: String
+    },
+    description: {
+        type: String
+    },                     
     password: {
         type: String,
         required: true

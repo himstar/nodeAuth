@@ -139,6 +139,60 @@ router.delete('/:id', (req, res, next)=>{
         }
     });
 });
+router.post('/profile/update', function (req, res) {
+    var phone = req.body.phone;
+    var country = req.body.country;
+    var webUrl = req.body.webUrl;
+    var profile_image = req.body.profile_image;
+    var personName = req.body.personName;
+    var companyName = req.body.companyName;
+    var facebook = req.body.facebook;
+    var twitter = req.body.twitter;
+    var googlePlus = req.body.googlePlus;
+    var linkedin = req.body.linkedin;
+    var description = req.body.description;                
+    var companyId = req.body.companyId;
+    var password = req.body.password;
+    Company.findOne({ _id: companyId })
+        .exec()
+        .then(function (company) {
+            bcrypt.compare(password, company.password, function (err, success) {
+                if (success) {
+                    company.phone = phone;
+                    company.companyName = companyName;
+                    company.country = country;
+                    company.personName = personName;
+                    company.webUrl = webUrl;
+                    company.facebook = facebook;
+                    company.googlePlus = googlePlus;
+                    company.twitter = twitter;
+                    company.linkedin = linkedin;
+                    company.description = description;
+                    company.profile_image = profile_image;
+                    company.save((err, company) => {
+                        if (err) {
+                            return res.json({
+                                message: err
+                            });
+                        } else {
+                            return res.json({
+                                message: 'success'
+                            });
+                        }
+                    });
+                } else {
+                    return res.json({
+                        message: 'invalid password'
+                    });
+                }
+            });
+        })
+        .catch(error => {
+            res.json({
+                message: 'error'
+            });
+        });;
+});
 router.post('/profile/adminUpdate', (req, res, next)=>{
     var companyId = req.body.companyId;
     var phone= req.body.companyPhone;
