@@ -174,6 +174,34 @@ router.post('/profile/update', function (req, res) {
             });
         });;
 });
+router.post('/profile/image/update', (req, res, next) => {
+    var userId = req.body.userId;
+    var profile_image = req.body.profile_image;
+    User.findOne({ _id: userId }, (err, user) => {
+        if (err) {
+            res.json({
+                message: 'error'
+            });
+        } else if (!user) {
+            res.json({
+                message: 'invalid user'
+            });
+        } else {
+            user.profile_image = profile_image;
+            user.save((err, user) => {
+                if (err) {
+                    res.json({
+                        message: 'error'
+                    });
+                } else {
+                    res.json({
+                        message: 'success'
+                    });
+                }
+            });
+        }
+    });
+});
 router.post('/profile/adminUpdate', (req, res, next) => {
     var userId = req.body.userId;
     var phone = req.body.phone;

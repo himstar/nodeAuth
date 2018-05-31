@@ -193,6 +193,34 @@ router.post('/profile/update', function (req, res) {
             });
         });;
 });
+router.post('/profile/image/update', (req, res, next) => {
+    var companyId = req.body.companyId;
+    var logo = req.body.logo;
+    Company.findOne({ _id: companyId }, (err, company) => {
+        if (err) {
+            res.json({
+                message: 'error'
+            });
+        } else if (!company) {
+            res.json({
+                message: 'invalid company'
+            });
+        } else {
+            company.logo = logo;
+            company.save((err, company) => {
+                if (err) {
+                    res.json({
+                        message: 'error'
+                    });
+                } else {
+                    res.json({
+                        message: 'success'
+                    });
+                }
+            });
+        }
+    });
+});
 router.post('/profile/adminUpdate', (req, res, next)=>{
     var companyId = req.body.companyId;
     var phone= req.body.companyPhone;

@@ -46,6 +46,9 @@ const CompanySchema = mongoose.Schema({
     activePlan: {
         type: Number
     },
+    logo: {
+        type: String
+    },
     assignedReviews: [{
         type: String
     }]    
