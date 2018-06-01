@@ -136,7 +136,6 @@ router.post('/profile/update', function (req, res) {
     var phone = req.body.phone;
     var gender = req.body.gender;
     var country = req.body.country;
-    var profile_image = req.body.profile_image;
     var name = req.body.name;
     var userId = req.body.userId;
     var password = req.body.password;
@@ -149,7 +148,6 @@ router.post('/profile/update', function (req, res) {
                     user.gender = gender;
                     user.country = country;
                     user.name = name;
-                    user.profile_image = profile_image;
                     user.save((err, user) => {
                         if (err) {
                             return res.json({

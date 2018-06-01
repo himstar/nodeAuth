@@ -19,6 +19,15 @@ router.get('/:id', (req, res, next)=>{
         }
     });
 });
+router.get('/url/:webUrl', (req, res, next)=>{
+    Company.find({webUrl: req.params.webUrl}, (err, result)=>{
+        if(err){
+            res.json(err);
+        } else {
+            res.json(result);
+        }
+    });
+});
 router.post('/login', function(req, res){
     var email = req.body.email;
     var password = req.body.password;
@@ -143,7 +152,6 @@ router.post('/profile/update', function (req, res) {
     var phone = req.body.phone;
     var country = req.body.country;
     var webUrl = req.body.webUrl;
-    var profile_image = req.body.profile_image;
     var personName = req.body.personName;
     var companyName = req.body.companyName;
     var facebook = req.body.facebook;
@@ -168,7 +176,6 @@ router.post('/profile/update', function (req, res) {
                     company.twitter = twitter;
                     company.linkedin = linkedin;
                     company.description = description;
-                    company.profile_image = profile_image;
                     company.save((err, company) => {
                         if (err) {
                             return res.json({
