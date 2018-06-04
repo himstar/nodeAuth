@@ -25,6 +25,9 @@ const CompanySchema = mongoose.Schema({
     phone: {
         type: String
     },
+    category: {
+        type: String
+    },
     facebook: {
         type: String
     }, 

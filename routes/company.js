@@ -161,6 +161,7 @@ router.post('/profile/update', function (req, res) {
     var description = req.body.description;                
     var companyId = req.body.companyId;
     var password = req.body.password;
+    var category = req.body.category;
     Company.findOne({ _id: companyId })
         .exec()
         .then(function (company) {
@@ -176,6 +177,7 @@ router.post('/profile/update', function (req, res) {
                     company.twitter = twitter;
                     company.linkedin = linkedin;
                     company.description = description;
+                    company.category = category;
                     company.save((err, company) => {
                         if (err) {
                             return res.json({
