@@ -18,15 +18,15 @@ router.get('/:id', (req, res, next)=>{
     });
 });
 router.post('/add', (req, res, next)=> {
-    var rate= req.body.rate;
-    var review= req.body.review;
-    var assignedUser= req.body.UserId;
-    var assignedCompany= req.body.CompanyId;
+    var rating= req.body.rating;
+    var reviewText= req.body.reviewText;
+    var assignedUser= req.body.userId;
+    var assignedCompany= req.body.companyId;
     var newReview = new Review({
-        rate: req.body.rate,
-        review: req.body.review,
-        assignedUser: req.body.UserId,
-        assignedCompany: req.body.CompanyId
+        rate: rating,
+        review: reviewText,
+        assignedUser: assignedUser,
+        assignedCompany: assignedCompany
     });
     newReview.save((err, review)=>{
         if(err){
