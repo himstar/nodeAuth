@@ -20,11 +20,13 @@ router.get('/:id', (req, res, next)=>{
 router.post('/add', (req, res, next)=> {
     var rating= req.body.rating;
     var reviewText= req.body.reviewText;
+    var reviewTitle= req.body.reviewTitle;
     var assignedUser= req.body.userId;
     var assignedCompany= req.body.companyId;
     var newReview = new Review({
         rate: rating,
         review: reviewText,
+        title: reviewTitle,
         assignedUser: assignedUser,
         assignedCompany: assignedCompany
     });

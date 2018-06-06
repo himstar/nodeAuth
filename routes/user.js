@@ -200,6 +200,34 @@ router.post('/profile/image/update', (req, res, next) => {
         }
     });
 });
+router.post('/profile/review/add', (req, res, next) => {
+    var userId = req.body.userId;
+    var reviewId = req.body.reviewId;
+    User.findOne({ _id: userId }, (err, user) => {
+        if (err) {
+            res.json({
+                message: 'error'
+            });
+        } else if (!user) {
+            res.json({
+                message: 'invalid user'
+            });
+        } else {
+            user.assignedReviews = reviewId;
+            user.save((err, user) => {
+                if (err) {
+                    res.json({
+                        message: 'error'
+                    });
+                } else {
+                    res.json({
+                        message: 'success'
+                    });
+                }
+            });
+        }
+    });
+});
 router.post('/profile/adminUpdate', (req, res, next) => {
     var userId = req.body.userId;
     var phone = req.body.phone;

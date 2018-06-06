@@ -230,6 +230,34 @@ router.post('/profile/image/update', (req, res, next) => {
         }
     });
 });
+router.post('/profile/review/add', (req, res, next) => {
+    var companyId = req.body.companyId;
+    var reviewId = req.body.reviewId;
+    Company.findOne({ _id: companyId }, (err, company) => {
+        if (err) {
+            res.json({
+                message: 'error'
+            });
+        } else if (!company) {
+            res.json({
+                message: 'invalid company'
+            });
+        } else {
+            company.assignedReviews = reviewId;
+            company.save((err, company) => {
+                if (err) {
+                    res.json({
+                        message: 'error'
+                    });
+                } else {
+                    res.json({
+                        message: 'success'
+                    });
+                }
+            });
+        }
+    });
+});
 router.post('/profile/adminUpdate', (req, res, next)=>{
     var companyId = req.body.companyId;
     var phone= req.body.companyPhone;
