@@ -284,5 +284,41 @@ router.post('/profile/adminUpdate', (req, res, next)=>{
         }
     });
 });
-
+router.get("/", function(req, res){
+    var noMatch = null;
+    if(req.query.search) {
+        const searhQuery = new RegExp(escapeSearch(req.query.search), 'gi');
+        
+        // Get all campgrounds from DB
+        Company.find({companyName: req.query.search}, function(err, allcompanies){
+            console.log(allcompanies);
+           if(err){
+               console.log(err);
+           } else {
+              if(Company.length < 1) {
+                  noMatch = "No company match that query, please try again.";
+              }
+              res.json({
+                Company: allcompanies,
+                noMatch: noMatch
+            });
+           }
+        });
+    } else {
+        // Get all campgrounds from DB
+        Company.find({}, function(err, allcompanies){
+           if(err){
+               console.log(err);
+           } else {
+            res.json({
+                Company: allcompanies,
+                noMatch: noMatch
+            });
+           }
+        });
+    }
+});
+function escapeSearch(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
 module.exports = router;

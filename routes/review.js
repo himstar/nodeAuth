@@ -34,7 +34,10 @@ router.post('/add', (req, res, next)=> {
         if(err){
             res.json(err);
         } else {
-            res.json('Review added successfully');
+            res.json({
+                message: 'success',
+                review: review
+            });
         }
     });    
 });
