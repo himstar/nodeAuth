@@ -5,83 +5,103 @@ const jwt = require('jsonwebtoken');
 
 const Company = require('../models/companies');
 
-router.get('/all', (req, res, next)=> {
-    Company.find((err, companies)=>{
-        res.json(companies);
+router.get('/all', (req, res, next) => {
+    Company.find((err, companies) => {
+        if (err) {
+            res.json(err);
+        } else {
+            res.json(companies);
+        }
     });
 });
-router.get('/:id', (req, res, next)=>{
-    Company.find({_id: req.params.id}, (err, result)=>{
-        if(err){
+router.get('/search', (req, res, next) => {
+    Company.find((err, companies) => {
+        if (err) {
+            res.json(err);
+        } else {
+            permittedValues = [];
+            for (i = 0; i < companies.length; i++) {
+                permittedValues[i] = {
+                    companyName: companies[i]["companyName"],
+                    webUrl: companies[i]["webUrl"]
+                }
+            }
+            res.json(permittedValues);
+        }
+    });
+});
+router.get('/:id', (req, res, next) => {
+    Company.find({ _id: req.params.id }, (err, result) => {
+        if (err) {
             res.json(err);
         } else {
             res.json(result);
         }
     });
 });
-router.get('/url/:webUrl', (req, res, next)=>{
-    Company.find({webUrl: req.params.webUrl}, (err, result)=>{
-        if(err){
+router.get('/url/:webUrl', (req, res, next) => {
+    Company.find({ webUrl: req.params.webUrl }, (err, result) => {
+        if (err) {
             res.json(err);
         } else {
             res.json(result);
         }
     });
 });
-router.post('/login', function(req, res){
+router.post('/login', function (req, res) {
     var email = req.body.email;
     var password = req.body.password;
-    Company.findOne({email: email})
-    .exec()
-    .then(function(company) {
-       bcrypt.compare(password, company.password, function(err, result){
-          if(err) {
-             return res.json({
-                message: 'Unauthorized Access'
-             });
-          }
-          if(result) {
-             const jwtToken = jwt.sign({
-                email: company.email,
-                companyName: company.companyName,
-                activePlan: company.activePlan,
-                _id: company._id
-              },
-              'secret',
-               {
-                 expiresIn: '2h'
-               });
-               return res.json({
-                    message: 'success',
-                    token: jwtToken
-               });             
-          }
-          return res.json({
-                message: 'Unauthorized Access'
-          });
-       });
-    })
-    .catch(error => {
-       res.json({
-        message: 'error'
-       });
-    });;
+    Company.findOne({ email: email })
+        .exec()
+        .then(function (company) {
+            bcrypt.compare(password, company.password, function (err, result) {
+                if (err) {
+                    return res.json({
+                        message: 'Unauthorized Access'
+                    });
+                }
+                if (result) {
+                    const jwtToken = jwt.sign({
+                        email: company.email,
+                        companyName: company.companyName,
+                        activePlan: company.activePlan,
+                        _id: company._id
+                    },
+                        'secret',
+                        {
+                            expiresIn: '2h'
+                        });
+                    return res.json({
+                        message: 'success',
+                        token: jwtToken
+                    });
+                }
+                return res.json({
+                    message: 'Unauthorized Access'
+                });
+            });
+        })
+        .catch(error => {
+            res.json({
+                message: 'error'
+            });
+        });;
 });
-router.post('/register', function(req, res) {
-    var personName= req.body.personName;
-    var companyName= req.body.companyName;
+router.post('/register', function (req, res) {
+    var personName = req.body.personName;
+    var companyName = req.body.companyName;
     var webUrl = req.body.webUrl;
     var email = req.body.email;
     var phone = req.body.phone;
-    var password = req.body.password;  
-    var activePlan = 0;  
-    bcrypt.hash(password, 10, function(err, hash){
-       if(err) {
-          return res.json({
-             error: err
-          });
-       }
-       else {
+    var password = req.body.password;
+    var activePlan = 0;
+    bcrypt.hash(password, 10, function (err, hash) {
+        if (err) {
+            return res.json({
+                error: err
+            });
+        }
+        else {
             var newCompany = new Company({
                 personName: personName,
                 companyName: companyName,
@@ -91,31 +111,31 @@ router.post('/register', function(req, res) {
                 activePlan: activePlan,
                 password: hash
             });
-            newCompany.save((err, result)=>{
-                if(err) {
+            newCompany.save((err, result) => {
+                if (err) {
                     return res.json({
                         message: 'alreadyRegistered'
                     });
-                 }
-                 if(result) {
+                }
+                if (result) {
                     return res.json({
-                       message: 'success'
+                        message: 'success'
                     });
-                 }
-                 return res.json({
-                        message: 'error'
-                 });
+                }
+                return res.json({
+                    message: 'error'
+                });
             });
-       }
+        }
     });
 });
-router.post('/addAdmin', (req, res, next)=> {
-    var companyUrl= req.body.companyUrl;
-    var companyName= req.body.companyName;
-    var companyEmail= req.body.companyEmail;
-    var companyPassword= req.body.companyPassword;
+router.post('/addAdmin', (req, res, next) => {
+    var companyUrl = req.body.companyUrl;
+    var companyName = req.body.companyName;
+    var companyEmail = req.body.companyEmail;
+    var companyPassword = req.body.companyPassword;
     var companyPhone = req.body.companyPhone;
-    var assignedReviews= req.body.reviewId;
+    var assignedReviews = req.body.reviewId;
     Company.findOne({ companyUrl: companyUrl }, (err, company) => {
         if (err) console.log(err);
         if (company) {
@@ -129,8 +149,8 @@ router.post('/addAdmin', (req, res, next)=> {
                 companyPhone: companyPhone,
                 assignedReviews: assignedReviews
             });
-            newCompany.save((err, company)=>{
-                if(err){
+            newCompany.save((err, company) => {
+                if (err) {
                     res.json(err);
                 } else {
                     res.json('Company added successfully');
@@ -139,9 +159,9 @@ router.post('/addAdmin', (req, res, next)=> {
         }
     });
 });
-router.delete('/:id', (req, res, next)=>{
-    Company.remove({_id: req.params.id}, (err, result)=>{
-        if(err){
+router.delete('/:id', (req, res, next) => {
+    Company.remove({ _id: req.params.id }, (err, result) => {
+        if (err) {
             res.json(err);
         } else {
             res.json('Company deleted successfully');
@@ -158,7 +178,7 @@ router.post('/profile/update', function (req, res) {
     var twitter = req.body.twitter;
     var googlePlus = req.body.googlePlus;
     var linkedin = req.body.linkedin;
-    var description = req.body.description;                
+    var description = req.body.description;
     var companyId = req.body.companyId;
     var password = req.body.password;
     var category = req.body.category;
@@ -258,24 +278,24 @@ router.post('/profile/review/add', (req, res, next) => {
         }
     });
 });
-router.post('/profile/adminUpdate', (req, res, next)=>{
+router.post('/profile/adminUpdate', (req, res, next) => {
     var companyId = req.body.companyId;
-    var phone= req.body.companyPhone;
-    var email= req.body.companyEmail;
-    var url= req.body.companyUrl;
-    var name= req.body.companyName;
-    Company.findOne({_id: companyId}, (err, company)=>{
+    var phone = req.body.companyPhone;
+    var email = req.body.companyEmail;
+    var url = req.body.companyUrl;
+    var name = req.body.companyName;
+    Company.findOne({ _id: companyId }, (err, company) => {
         if (err) {
             console.log(err);
-        } else if(!company){
+        } else if (!company) {
             res.json('Company not exist');
         } else {
             company.companyPhone = phone;
             company.companyUrl = url;
             company.companyEmail = email;
             company.companyName = name;
-            company.save((err, company)=>{
-                if(err){
+            company.save((err, company) => {
+                if (err) {
                     res.json(err);
                 } else {
                     res.json('Company updated');
@@ -283,40 +303,6 @@ router.post('/profile/adminUpdate', (req, res, next)=>{
             });
         }
     });
-});
-router.get("/", function(req, res){
-    var noMatch = null;
-    if(req.query.search) {
-        const searhQuery = new RegExp(escapeSearch(req.query.search), 'gi');
-        
-        // Get all campgrounds from DB
-        Company.find({companyName: req.query.search}, function(err, allcompanies){
-            console.log(allcompanies);
-           if(err){
-               console.log(err);
-           } else {
-              if(Company.length < 1) {
-                  noMatch = "No company match that query, please try again.";
-              }
-              res.json({
-                Company: allcompanies,
-                noMatch: noMatch
-            });
-           }
-        });
-    } else {
-        // Get all campgrounds from DB
-        Company.find({}, function(err, allcompanies){
-           if(err){
-               console.log(err);
-           } else {
-            res.json({
-                Company: allcompanies,
-                noMatch: noMatch
-            });
-           }
-        });
-    }
 });
 function escapeSearch(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
