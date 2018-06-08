@@ -3,7 +3,6 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var cors = require('cors');
 var cookieParser = require('cookie-parser');
-var session = require('express-session');
 
 var app = express();
 var port = 3200;
@@ -39,12 +38,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 // session
 app.use(cookieParser());
-app.use(session({
-    secret: 'infinity-war',
-    resave: false,
-    saveUninitialized: true
-}));
-  
 
 app.use('/api/common', route);
 app.use('/api/user', user);
