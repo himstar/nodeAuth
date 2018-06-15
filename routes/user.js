@@ -213,7 +213,7 @@ router.post('/profile/review/add', (req, res, next) => {
                 message: 'invalid user'
             });
         } else {
-            user.assignedReviews = reviewId;
+            user.assignedReviews.push(reviewId);
             user.save((err, user) => {
                 if (err) {
                     res.json({
